@@ -1,0 +1,21 @@
+## Sample output file from web-gather.py
+## Test domain: bindshell.it.cx
+## It gathered all of the links on the given page and my email address
+
+http://bindshell.it.cx/index.html
+http://bindshell.wordpress.com
+http://bindshell.it.cx/code.html
+http://bindshell.it.cx/projects.html
+http://bindshell.it.cx/contact.html
+http://krypt3ia.wordpress.com/
+http://blog.pentestify.com/
+http://blog.zx2c4.com/
+http://diablohorn.wordpress.com/
+http://backw00ds.com/
+http://shift32.wordpress.com
+http://rdist.root.org/
+http://www.pentest-standard.org/
+http://www.coresec.org/
+http://www.pentesterscripting.com/
+http://bindshell.it.cx/pgpkey.txt
+[ Email ] bindshell@live.com

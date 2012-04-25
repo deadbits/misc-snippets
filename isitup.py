@@ -2,14 +2,17 @@
 
 import httplib
 import sys
+import argparse
 
-if len(sys.argv) < 3:
-    print(".:: Simple HTTP Connection Checker ::.")
-    print(" Usage: ./webcheck.py <hostname> <port>\n")
-    sys.exit()
+help = """Checks if a given website is active or not"""
 
-hostname = sys.argv[1]
-port = sys.argv[2]
+parser = argparse.ArgumentParser(description=help)
+parser.add_argument("--www", help="website", required=True)
+parser.add_argument("--port", help="port", type=int, default=80)
+args = parser.parse_args()
+
+hostname = args.www
+port = args.port
 
 client = httplib.HTTPConnection(hostname,port)
 client.request("GET","/")
