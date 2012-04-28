@@ -1,0 +1,105 @@
+# sub8 theme
+# [author: ohdae]
+
+default_color = "-1";
+replaces = { "[]=" = "%K$*%n"; };
+
+abstracts = {
+
+  line_start = "%y::%Y:%n ";
+  timestamp = "$*";
+  hilight = "$*";
+  error = "%R$*%n";
+  channel = "$*";
+  nick = "%y$*";
+  nickhost = "%w($*)";
+  server = "%y($*)%w";
+  comment = "($*)";
+  reason = "%W{comment $*}";
+  mode = "%W{comment $*}";
+
+  channick_hilight = "%W$*";
+  chanhost_hilight = "%W{nickhost $*}";
+  channick = "%w$*";
+  chanhost = "%y{nickhost $*}";
+  channelhilight = "%W$*%w";
+  ban = "%R$*";
+
+  msgnick = "$0$1-$w:$n ";
+
+  ownmsgnick = "{msgnick $0 $1-}";
+  ownnick = "%W$*%w";
+  pubmsgnick = "{msgnick $0 $1-}";
+  pubnick = "%y$*%w";
+  pubmsgmenick = "{msgnick $0 $1-}";
+  menick = "%W$*%w";
+  pubmsghinick = "{msgnick $1 $0$2-}";
+  msgchannel = "%w:$*%w";
+  privmsg = "$0($1-)  ";
+  ownprivmsg = "$0($1-)  ";
+  ownprivmsgnick = "%W$*%w: ";
+  ownprivnick = "%W$*%w";
+  privmsgnick = "%y$*%w: ";
+
+  action_core = " *  $* ";
+  action = "{action_core $*} ";
+  ownaction = "{action $*}";
+  ownaction_target = "{action_core $0}:$1 ";
+  pvtaction = "%y (*) $%w* ";
+  pvtaction_query = "{action $*}";
+  pubaction = "%W{action $*}";
+
+  whois = " %W=> %w$[8]0 : $1-";
+
+  ownnotice = "$0($1-) ";
+  notice = "$* ";
+  pubnotice_channel = "%W:%n$*";
+  pvtnotice_host = "($*)";
+  servernotice = "%y(%w!%y)%w$*%w ";
+
+  ownctcp = "$0 $1- ";
+  ctcp = "$* ";
+  wallop = "$*: ";
+  wallop_nick = "$*";
+  wallop_action = " * $* ";
+
+  netsplit = "%W$*%w";
+  netjoin = "%W$*%w";
+
+  names_prefix = "";
+  names_nick = "[$0$1-] ";
+  names_nick_op = "%y{names_nick $*}";
+  names_nick_halfop = "%w{names_nick $*}";
+  names_nick_voice = "%w{names_nick $*}";
+  names_users = "%y$*%w";
+  names_channel = "%y$*%w";
+
+  dcc = "$*";
+  dccfile = "$*";
+
+  dccownmsg = "$0($1-) ";
+  dccownnick = "$*";
+  dccownquerynick = "$*";
+  dccownaction = "{action $*}";
+  dccownaction_target = "{action_core $0}:$1 ";
+  dccmsg = "$1-($0) ";
+  dccquerynick = "$*";
+  dccaction = " (*dcc*) $* %|";
+
+  sb_background = "%n";
+  sb_prompt_bg = "%n";
+  sb_info_bg = "%W";
+  sb_topic_bg = "%n";
+  sbstart = "";
+  sbend = " ";
+  prompt = " %W#!%n $* ";
+  sb = " $* ";
+  sbmode = "%y(+$*)%w";
+  sbaway = " (away)";
+  sbservertag = "%W:$0%n";
+  sb_act_sep = "%n$*";
+  sb_act_text = "%n$*";
+  sb_act_msg = "%W$*";
+  sb_act_hilight = "%B$*";
+  sb_act_hilight_color = "$0$1-%n";
+};
