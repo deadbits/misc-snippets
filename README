@@ -11,3 +11,7 @@ isitup.py :: checks if a url/host is responsive
 newnym.py :: connects to a TOR control port and sends the newnym command every 90 seconds
 
 rk-aliases.py :: uses bash aliases to hide user and file activity in a semi rootkit-like manor
+
+multi-server.py :: TCP shell server capable of handling multiple incoming connections. presents user with
+                   a shell that displays the current working directory and also the ability to 'cd'.
+                   note: 'cd' might not sound too exciting but many shells don't have the feature ;-)
