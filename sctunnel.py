@@ -1,6 +1,11 @@
 #!/usr/bin/python
+#
+# see @vorbis for original implementation
+#
+# [author: ohdae]
+# socat tunnel helper script
 
-import os, sys
+import os
 import argparse
 
 def whereis():
