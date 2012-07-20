@@ -23,7 +23,7 @@ def main():
         print("[+] New identity in 90 seconds...")
     
 
-help = """Pull linked url's and emails from a given website and saved them into a text document"""
+help = """Utilizes telnetlib to change TOR identities"""
 
 parser = argparse.ArgumentParser(description=help)
 parser.add_argument("--host", help="hostname, usually localhost", default="localhost")
