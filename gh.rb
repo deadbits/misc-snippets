@@ -9,6 +9,8 @@
 # ./gh.rb /var/log/nginx > hosts.txt
 # 
 
+require 'resolv'
+
 def banner
   puts "\n\tparse log ips => dns"
   puts "  usage:\t./gh.rb <nginx log path>"
@@ -17,10 +19,10 @@ end
 
 def get_dns(ip_list)
   ip_list.each do |addr|
-    info = `host #{addr}`
-    if info.include?("pointer")
-      puts "\nIP:\t#{addr}\nHost:\t#{info.split("pointer")[1]}"
-    else
+    begin
+      dns = Resolv.getname "#{addr}"
+      puts "\nIP:\t#{addr}\nHost:\t#{dns}"
+    rescue
       puts "\nIP:\t#{addr}\nHost:\tnot found"
     end
   end
