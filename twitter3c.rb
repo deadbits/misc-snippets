@@ -2,6 +2,9 @@
 #
 # finds available 3 character twitter accounts
 # might add userlist support later but its not really needed
+# twitter has an api limit on these requests - how many, i don't know.
+# requests need to be throttled greatly or maybe implement w/ tor gem
+# for exit node switching to evade limits. idk.
 # don't hate.
 
 require 'net/http'
