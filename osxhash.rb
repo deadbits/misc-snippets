@@ -18,7 +18,7 @@ def make_output(guid, hash, user)
 end
 
 def get_guid(user_name)
-  puts "[~] extracting UID for user #{user_name}..."
+  puts "[~] extracting GUID for user #{user_name}..."
   user_guid = `dscl localhost -read /Search/Users/#{user_name} | grep GeneratedUID | cut -c15-`.split("\n")[0]
   puts "[~] retrieving SHA1 hash..."
   user_hash = `cat /var/db/shadow/hash/#{user_guid} | cut -c169-216`.chomp!
