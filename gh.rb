@@ -17,8 +17,8 @@ def banner
   puts "example:\t./gh.rb /var/log/nginx"
 end
 
-def get_dns(ip_list)
-  ip_list.each do |addr|
+def get_dns
+  @ip_list.each do |addr|
     begin
       dns = Resolv.getname "#{addr}"
       puts "\nIP:\t#{addr}\nHost:\t#{dns}"
@@ -38,7 +38,7 @@ def parse_ips(log_name)
       @ip_list.push(addr)
       puts "[~] parsed #{addr}"
     end
-    get_dns(@ip_list)
+    get_dns
   else
     puts "[!] error parsing log file #{log_name}"
     exit(1)
@@ -46,7 +46,6 @@ def parse_ips(log_name)
 end
 
 def load_logs(log_path)
-  @logs = []
   raise ArgumentError unless File.exists?(log_path)
   Dir.foreach(log_path) do |log_name|
     parse_ips("#{log_path}/#{log_name}") unless log_name.include?(".gz") or log_name.include?("error.log")
