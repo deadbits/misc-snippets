@@ -12,6 +12,7 @@ def calculate_distance(str1, str2):
 		print("Result: ")
 		print(dist)
 
+
 def main():
 		string_one = raw_input("string one: ")
 		string_two = raw_input("string two: ")
@@ -19,5 +20,6 @@ def main():
 				print("string lengths are not identical!")
 				sys.exit(1)
 		calculate_distance(string_one, string_two)
+
 
 main()
