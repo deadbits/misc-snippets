@@ -1,67 +1,74 @@
 #!/usr/bin/env python
+# automated recon utility [v1.2]
+# ohdae - 2013
+# https://github.com/ohdae/misc-snippets
 #
-# automated recon utility - version 1.0
-# automation for SubBrute script by TheRook and nmap
-# place this in the same directory as subbrute.py
-# supply a domain name and an output file.
-# subdomain bruteforce is performed and all hosts are scanned
-# ~ ohdae
+# designed for use with SubBrute by TheRook
+# this script automates the subbrute process
+# and then perform a quick nmap scan of each subdomain
+# that is found. make note that some of the subdomains
+# might be vhosts and therefore have the same nmap output.
+# this isn't anything innovative. it's just something i use myself.
 
 import os
-import sys
+import argparse
 import commands
+import sys
+
+def nmap(h):
+    print('starting nmap scan of %s ...' % h)
+    try:
+        nout = open(scans, 'wb')
+        raw = commands.getoutput('nmap -sS -sV -PN -T5 %s' % h).split('\n')
+        for l in raw:
+            if only_open:
+                if 'open' in l:
+                    nout.write(l)
+            else:
+                nout.write(l)
+        nout.write('\n\n')
+        nout.close()
+    except:
+        print('[error] failed to nmap %s' % h)
+
+def brute():
+    s = sub_path+'subbrute.py'
+    r = sub_path+'resolvers.txt'
+    l = sub_path+'subs.txt' 
+    hout = open(hosts, 'wb')
+    print('starting sub-domain recon for %s. be patient ...' % host)
+    subs = commands.getoutput('python %s -r %s -s %s %s' % (s, r, l, host)).split('\n')
+    for h in subs:
+        if h is not "":
+            hout.write(h)
+            nmap(h)
+    print('\nautomated recon completed!')
+    print('sub-domains found: %s' % hosts)
+    print(' nmap scan results: %s' % scans)
 
 
-def banner():
-	print("\n\t       automated recon utility [v1.0]")
-	print("\t  usage: ./aru.py <domain> <output file>")
-	print("\texample: ./aru.py hackmeplz.com woot.txt\n")
+help = """automated recon utility - place in the same directory as subbrute.py"""
+parser = argparse.ArgumentParser(description=help, prog='aru.py')
+parser.add_argument('--target', help='target', required=True)
+parser.add_argument('--open', help='only log open ports [default on]', default=True)
+parser.add_argument('--path', help='subbrute [ex: /pentest/subbrute', required=True)
+args = parser.parse_args()
+host = args.target
+only_open = args.open
+sub_path = args.path
 
-
-def run_subbrute(host):
-	found_domains = []
-	if os.path.exists("subbrute.py") is False:
-		print("[error] subbrute was not found in this directory.")
-		sys.exit(1)
-
-	print("[~] starting sub-domain bruteforce on %s. be patient..." % host)
-	sub_output = commands.getoutput("python subbrute.py -r resolvers.txt -s subs.txt %s" % host).split("\n")
-	if subs_output is not "":
-		try:
-			for domains in subs_output:
-				found_domains.append(domains)
-				print("[~] added %s to scan queue." % domains)
-		except:
-			pass
-	else:
-		print("[error] no sub-domains found for %s" % domain)
-	print("[~] starting nmap scans on discoverd domains...")
-	run_nmap(found_domains, output_file)
-
-
-def run_nmap(found_domains, output_file):
-	fout = open(output_file, "rb")
-
-	for host in found_domains:
-		print("[~] scanning %s" % host)
-		nmap_out = commands.getoutput("nmap -PN %s" % host).split("\n")
-		for lines in nmap_out:
-			output.write(lines)
-
-	print("[*] scans complete.")
-	print("[*] output file: %s" % output_file)
-
-
-try:
-	domain = sys.argv[1]
-	fout = sys.argv[2]
-	run_subbrute(domain)
-except IndexError:
-	banner()
-
-
-
-
-
-
+if not sub_path[-1:] == '/':
+    sub_path = sub_path + '/'
+if not os.path.exists(sub_path+'subbrute.py'):
+    print('[error] subbrute.py not found in %s' % sub_path)
+    sys.exit(1)
+if os.path.exists('./%s' % host):
+    print('[error] ./%s exists. did you all ready scan this domain?' % host)
+    sys.exit(1)
+os.mkdir('./%s' % host)
+hosts = './%s/hosts.txt' % host
+scans = './%s/nmap.txt' % host
+os.system('touch %s' % hosts)
+os.system('touch %s' % scans)
+brute()
 
