@@ -47,16 +47,22 @@ def download(hash, api_key):
         req = requests.get(malshare_url, params=data)
     except:
         print 'error: problem making http request!'; sys.exit(1)
+
     if req.content == 'Sample not found':
-        print 'error: sample %s not found!' % hash ; sys.exit(1)
+        print 'error: sample %s not found!' % hash 
+        sys.exit(1)
+
     elif req.content == 'ERROR! => Account not activated':
-        print 'error: invalid API key!'; sys.exit(1)
+        print 'error: invalid API key!'
+        sys.exit(1)
+
     else:
         if os.path.exists(hash):
-            print 'error: local file ./%s already exists!' % hash; sys.exit(1)
-        fout = open(hash, 'wb')
-        fout.write(req.content)
-        fout.close()
+            print 'error: local file ./%s already exists!' % hash
+            sys.exit(1)
+        
+        with open(hash, 'wb') as fp:
+            fp.write(req.content)
         print '  saved sample to %s' % (str(os.getcwd() + '/' + hash))
 
 def get_info(filepath):
