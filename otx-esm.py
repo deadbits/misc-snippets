@@ -1,75 +1,94 @@
-#!/usr/bin/env python
-#
-# osint collection for AlienVault OTX reputation db
-# stand-alone version from ArcReactor
-#
-# ohdae [ams]
-# http://github.com/ohdae/ArcReactor/
-#
+#!/usr/bin/env python3
+## @NOTE: NOT DONE - DO NOT USE
+###
+# Collect AlienVault OTX reputation DB entries and send over syslog
+# Updated for Py3.7
+# --
+# originally the stand-alone version from ArcReactor (an awful old project, dont look at it. really.)
+###
 
-import requests
-import re, sys
+import re
+import sys
+import time
 import socket
+import requests
 
-# define some stuff
+from tqdm import tqdm
+
+
 config = {
-    # alienvault's reputation db to use. i find snort format easier to parse
     'otx': 'http://reputation.alienvault.com/reputation.snort',
-    # syslog host
     'host': '127.0.0.1',
-    # syslog port
     'port': '512'
 }
-count = 0
+
 
 def send_syslog(msg):
-    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    # %d in the syslog msg is the syslog level + facility * 8
-    # 29 is the default for notice + daemon * 8 or 5 + 3 * 8
-    # data = '<%d>%s' % (level + facility*8, message)
-    # change this if you feel the need
-    data = '<%d>%s' % (29, msg)
-    sock.sendto(data, (config['host'], int(config['port'])))
-    sock.close()
+    """ Send a syslog message to defined host and port 
+    
+    @param msg: message
+    @type str
+    
+    @note: %d in the syslog msg is the syslog level + facility * 8
+         data = '<%d>%s' % (level + facility*8, message)
+         change this if you feel the need
+    """
+    res = False
+
+    try:
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        data = f'<29>{msg}'
+        sock.sendto(data, (config['host'], int(config['port'])))
+        sock.close()
+        res = True
+    except Exception as err:
+        print(f'[!] failed to send syslog message: {err}')
+
+    return res
+
 
 def gather_data():
-    # why anyone would use urllib when we have the requests lib, idk.
+    count = 0 
+
     data = requests.get(config['otx']).content
+    
     try:
-        print("[~] attempting to parse reputation data...")
-        for line in data.split("\n"):
-            # we really dont need that format checking function.
-            # lets just look for comments and blank lines first then parse
-            if not line.startswith("#") and line != "":
+        print('[~] attempting to parse reputation data ...')
+        for line in data.split('\n'):
+            if not line.startswith('#') and line != '':
                 try:
                     # snort format is: ip-address # message
                     d = line.split("#")
                     addr, info = d[0], d[1]
-                    print("[~] sending syslog event for %s - %s" % (info, addr))
-                    cef = 'CEF:0|OSINT|ArcReactor|1.0|100|%s|1|src=%s msg=%s' % (info, addr, config['otx'])
-                    send_syslog(cef)
-                    count += 1
+                    print(f'[~] sending syslog event for {info} - {addr}')
+                    cef = f'CEF:0|OSINT|OTX|1.0|100|{info}|1|src={addr} msg={config["otx"]}'
+                    res = send_syslog(cef)
+                    if res:
+                        count += 1
                 except IndexError:
                     continue
-    except:
-        print("[!] error retrieving otx database")
-        sys.exit(1)
 
+    except Exception as err:
+        print(f'[!] error retrieving otx database: {err}')
+        return count
+
+    return count
 
 print("\n\n")
 print("\t open-source data gathering ")
-print("\t   source >> alienvault.com   ")
-print("\t    author: ohdae [ams] ")
-print("\n\thttp://github.com/ohdae/arcreactor")
+print("\t   source >> AlienVault OTX   ")
 print("\n\n")
 
 print("[~] starting collecting of OTX reputation database...")
-# the alienvault otx db is updated every 60 minutes
-# if you want a constantly updated activelist in esm,
-# either run this script as a cronjob every hour or
-# change this to add a simple time.sleep(3600)
-# and repeat the gather_data() function
-gather_data()
-print("[*] collection complete.")
-print("[*] %d unique events sent." % count)
 
+
+while True:
+    try:
+        count = gather_data()
+        print(f'[*] {count} unique events sent from OTX')
+        print('[-] sleeping for 60 minutes ...')
+        for i in tqdm(range(10)):
+            time.sleep(3600)
+    except KeyboardException:
+        print('[!] caught KeyboardException by user. ending loop.')
+        break
