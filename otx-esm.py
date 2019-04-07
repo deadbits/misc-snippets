@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
 ###
 # Collect AlienVault Reputation DB entries and send over syslog
-# Updated for Py3.7 and better error handling, etc, etc.
-# --
-# originally the stand-alone version from ArcReactor
-# (an awful old project, dont look at it. really.)
+# Updated for Py3.7 for better error handling, etc, etc. but it doesnt run
+# because of an error I really dont care enough to debug.
 ###
 
 import time
