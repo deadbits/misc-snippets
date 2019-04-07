@@ -3,11 +3,10 @@
 # Collect AlienVault Reputation DB entries and send over syslog
 # Updated for Py3.7 and better error handling, etc, etc.
 # --
-# originally the stand-alone version from ArcReactor (an awful old project, dont look at it. really.)
+# originally the stand-alone version from ArcReactor
+# (an awful old project, dont look at it. really.)
 ###
 
-import re
-import sys
 import time
 import socket
 import requests
@@ -21,11 +20,11 @@ config = {
 
 
 def send_syslog(msg):
-    """ Send a syslog message to defined host and port 
-    
+    """ Send a syslog message to defined host and port
+
     @param msg: message
     @type str
-    
+
     @note: %d in the syslog msg is the syslog level + facility * 8
          data = '<%d>%s' % (level + facility*8, message)
          change this if you feel the need
@@ -45,10 +44,10 @@ def send_syslog(msg):
 
 
 def gather_data():
-    count = 0 
+    count = 0
 
     data = requests.get(config['otx']).content
-    
+
     try:
         print('[~] attempting to parse reputation data ...')
         for line in data.split('\n'):
@@ -71,6 +70,7 @@ def gather_data():
 
     return count
 
+
 if __name__ == '__main__':
     print('\n\n\t open-source data gathering ')
     print('\t   source >> AlienVault OTX   \n\n')
@@ -78,15 +78,16 @@ if __name__ == '__main__':
 
 while True:
     try:
-        print("[~] starting collecting of OTX reputation database...")
+        print("[~] starting collecting of AlienVault reputation database...")
         count = gather_data()
-        print(f'[*] {count} unique events sent from OTX')
-        print('[-] sleeping for 60 minutes ...')
-        for i in tqdm(range(3600), desc='Next collection (1 hour)', total=12, unit='5 min.'):
-            sleep(300)
-    except KeyboardException:
+        print(f'[*] {count} unique events sent over syslog')
+        print('[-] sleeping for 60 minutes until next collection...')
+        time.sleep(3600)
+
+    except KeyboardInterrupt:
         print('[!] caught KeyboardException by user. ending loop.')
         break
-    except Excecption as err:
+
+    except Exception as err:
         print(f'[!] caught unhandled exception: {err}')
         raise err
