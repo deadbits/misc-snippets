@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
-## @NOTE: NOT DONE - DO NOT USE
 ###
-# Collect AlienVault OTX reputation DB entries and send over syslog
-# Updated for Py3.7
+# Collect AlienVault Reputation DB entries and send over syslog
+# Updated for Py3.7 and better error handling, etc, etc.
 # --
 # originally the stand-alone version from ArcReactor (an awful old project, dont look at it. really.)
 ###
@@ -12,8 +11,6 @@ import sys
 import time
 import socket
 import requests
-
-from tqdm import tqdm
 
 
 config = {
@@ -59,9 +56,9 @@ def gather_data():
                 try:
                     # snort format is: ip-address # message
                     d = line.split("#")
-                    addr, info = d[0], d[1]
+                    addr, info = d[0].rstrip(), d[1].lstrip()
                     print(f'[~] sending syslog event for {info} - {addr}')
-                    cef = f'CEF:0|OSINT|OTX|1.0|100|{info}|1|src={addr} msg={config["otx"]}'
+                    cef = f'CEF:0|OSINT|AlienVault Reputation DB|1.0|100|{info}|1|src_ip={addr} msg={info} source={config["otx"]}'
                     res = send_syslog(cef)
                     if res:
                         count += 1
@@ -74,21 +71,22 @@ def gather_data():
 
     return count
 
-print("\n\n")
-print("\t open-source data gathering ")
-print("\t   source >> AlienVault OTX   ")
-print("\n\n")
-
-print("[~] starting collecting of OTX reputation database...")
+if __name__ == '__main__':
+    print('\n\n\t open-source data gathering ')
+    print('\t   source >> AlienVault OTX   \n\n')
 
 
 while True:
     try:
+        print("[~] starting collecting of OTX reputation database...")
         count = gather_data()
         print(f'[*] {count} unique events sent from OTX')
         print('[-] sleeping for 60 minutes ...')
-        for i in tqdm(range(10)):
-            time.sleep(3600)
+        for i in tqdm(range(3600), desc='Next collection (1 hour)', total=12, unit='5 min.'):
+            sleep(300)
     except KeyboardException:
         print('[!] caught KeyboardException by user. ending loop.')
         break
+    except Excecption as err:
+        print(f'[!] caught unhandled exception: {err}')
+        raise err
